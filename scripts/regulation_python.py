@@ -1,3 +1,5 @@
+# Kenny Yip and Rafael Trinidad worked on this script
+
 from fractions import Fraction
 def sublistRegulation(input, output_frame_count) -> list:
       assert isinstance(input, list)
