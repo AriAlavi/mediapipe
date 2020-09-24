@@ -1,7 +1,5 @@
 #include "mediapipe/framework/calculator_framework.h"
 #include "mediapipe/framework/port/status.h"
-#include "tensorflow/core/framework/tensor.h"
-#include "tensorflow/core/framework/types.h"
 #include "mediapipe/framework/formats/landmark.pb.h"
 #include "mediapipe/framework/formats/detection.pb.h"
 #include "mediapipe/framework/formats/matrix.h"
@@ -15,8 +13,6 @@ namespace mediapipe{
         constexpr char LandmarksHistory[] = "DOUBLE_LANDMARKS_HISTORY";
         constexpr char LandmarkMatrix[] = "MATRIX";
     }
-    namespace tf = ::tensorflow;
-
 
     class LandmarkHistoryToTensorCalculator : public CalculatorBase {
         public:

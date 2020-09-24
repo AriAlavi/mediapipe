@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package com.google.mediapipe.apps.handtrackinggpu;
+package com.signn.mediapipe.apps.handtrackinggpu;
 
 import android.os.Bundle;
 import android.util.Log;

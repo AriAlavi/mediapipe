@@ -47,7 +47,7 @@ android_binary(
     assets_dir = "",
     manifest = "//mediapipe/examples/android/src/java/com/google/mediapipe/apps/basic:AndroidManifest.xml",
     manifest_values = {
-        "applicationId": "com.signn.signn",
+        "applicationId": "com.signn.mediapipe.apps.handtrackinggpu",
         "appName": "SigNN",
         "mainActivity": ".MainActivity",
         "cameraFacingFront": "True",

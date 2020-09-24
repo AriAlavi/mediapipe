@@ -1,5 +1,4 @@
 #include "mediapipe/framework/calculator_framework.h"
-#include "mediapipe/framework/port/ret_check.h"
 #include "tensorflow/lite/interpreter.h"
 #include "mediapipe/calculators/signn/tflite_tensors_to_character_calculator.pb.h"
 
