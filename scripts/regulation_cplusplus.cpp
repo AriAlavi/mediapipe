@@ -1,3 +1,4 @@
+/*Rafael Trinidad worked on this script */
 #include <vector>
 #include <iostream>
 
