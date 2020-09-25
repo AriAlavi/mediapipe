@@ -24,5 +24,5 @@ message DynamicTfliteTensorsToCharacterCalculatorOptions {
   }
 
   optional float unknown_threshold = 1;
-  optional float last_character_bias = 2;
+  optional float memory_length = 2;
 }

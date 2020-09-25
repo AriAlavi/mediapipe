@@ -29,7 +29,7 @@ template <class T>
 std::vector<T> TimedQueue<T>::get(){
     auto front = times.front();
     auto now = clock();
-    while(delta_t(now, front) > memory_length){
+    while((delta_t(now, front) > memory_length) && dispenser.size() > 0){
         dispenser.erase(dispenser.begin());
         times.pop();
         front = times.front();
@@ -43,4 +43,5 @@ double TimedQueue<T>::delta_t(clock_t start, clock_t end){
 
 template class TimedQueue<bool>;
 template class TimedQueue<double>;
+template class TimedQueue<float>;
 template class TimedQueue<mediapipe::NormalizedLandmarkList>;

@@ -47,7 +47,7 @@ node {
   node_options: {
     [type.googleapis.com/mediapipe.DynamicTfliteTensorsToCharacterCalculatorOptions] {
       unknown_threshold: .65
-      last_character_bias: .1
+      memory_length: 2
     }
   }
 }
