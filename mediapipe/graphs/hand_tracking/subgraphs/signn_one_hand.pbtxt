@@ -61,7 +61,7 @@ node {
   output_stream: "LANDMARKS_HISTORY:landmarks_history"
   node_options: {
     [type.googleapis.com/mediapipe.LandmarkHistoryCalculatorOptions] {
-      memory_in_seconds: 1.5
+      memory_in_seconds: .8
       }
   }
 }

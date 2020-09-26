@@ -85,7 +85,7 @@ namespace mediapipe {
         most_common_index = i;
       }
     }
-    float certainty = most_common_count / total_count;
+    float certainty = (float)most_common_count / (float)total_count;
     std::string signn;
     if(certainty >= unknown_threshold){
       signn = DATA_MAP[most_common_index];
@@ -93,7 +93,7 @@ namespace mediapipe {
       signn = "Unknown";
     }
 
-
+    LOG(INFO) << DATA_MAP[most_common_index] << ": " << certainty << "% count: " << most_common_count;
 
 
 

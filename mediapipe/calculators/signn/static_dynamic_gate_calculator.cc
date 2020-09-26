@@ -49,7 +49,7 @@ namespace mediapipe{
                 
             }
             average_hand_history /= hand_history.size();
-            LOG(INFO) << average_hand_history;
+            // LOG(INFO) << average_hand_history;
             if(average_hand_history < DYNAMIC_THRESHOLD && extra_dynamic_frames < 0){
                 auto output_data = absl::make_unique<NormalizedLandmarkList>(static_data);
                 cc->Outputs().Tag(Landmarks).Add(output_data.release(), cc->InputTimestamp());
