@@ -1,0 +1,63 @@
+type: "SigNNStatic"
+
+input_stream: "LANDMARKS:landmarks"
+output_stream: "RENDER_DATA:signn"
+
+node {
+  calculator: "ZScoreCalculatorOneHand"
+  input_stream: "LANDMARKS:landmarks"
+  output_stream: "LANDMARKS:zscore_landmarks"
+}
+
+node{
+    calculator: "TimeAverageCalculatorOneHand"
+    input_stream: "LANDMARKS:zscore_landmarks"
+    output_stream: "LANDMARKS:average_zscore_landmarks"
+    node_options: {
+    [type.googleapis.com/mediapipe.TimeAverageCalculatorOptions] {
+      memory_in_seconds: 1
+    }
+  }
+}
+
+node {
+  calculator: "LandmarksToTensorCalculatorOneHand"
+  input_stream: "LANDMARKS:average_zscore_landmarks"
+  output_stream: "MATRIX:landmark_matrix"
+}
+
+node {
+  calculator: "TfLiteConverterCalculator"
+  input_stream: "MATRIX:landmark_matrix"
+  output_stream: "TENSORS:landmark_tensors"
+}
+
+node {
+  calculator: "TfLiteInferenceCalculator"
+  input_stream: "TENSORS:landmark_tensors"
+  output_stream: "TENSORS:signn_predictions"
+  node_options: {
+    [type.googleapis.com/mediapipe.TfLiteInferenceCalculatorOptions] {
+      model_path: "mediapipe/models/signn_static.tflite"
+    }
+  }
+}
+
+
+node {
+  calculator: "TfLiteTensorsToCharacterCalculator"
+  input_stream: "TENSORS:signn_predictions"
+  output_stream: "STRING:signn_string"
+  node_options: {
+    [type.googleapis.com/mediapipe.TfliteTensorsToCharacterCalculatorOptions] {
+      unknown_threshold: .7
+      last_character_bias: .1
+    }
+  }
+}
+
+node {
+    calculator: "StringToRenderDataCalculator"
+    input_stream: "STRING:signn_string"
+    output_stream: "RENDER_DATA:signn"
+}
