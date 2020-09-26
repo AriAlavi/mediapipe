@@ -61,7 +61,7 @@ node {
   output_stream: "LANDMARKS_HISTORY:landmarks_history"
   node_options: {
     [type.googleapis.com/mediapipe.LandmarkHistoryCalculatorOptions] {
-      memory_in_seconds: 1.8
+      memory_in_seconds: 1.5
       }
   }
 }
@@ -99,7 +99,7 @@ node{
   output_stream: "LANDMARKS_HISTORY:dynamic_landmarks"
   node_options: {
     [type.googleapis.com/mediapipe.StaticDynamicGateOptions] {
-      dynamic_threshold: .095
+      dynamic_threshold: .07
       maximum_extra_dynamic_frames: 8
       velocity_history: 1
     }

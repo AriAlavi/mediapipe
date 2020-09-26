@@ -91,13 +91,13 @@ namespace mediapipe{
 
             double distance = 0;
             for(int i = 0; i < hand.landmark_size(); i++){
-                distance += abs(hand.landmark(i).x() - hand_history.at(i * 2));
-                distance += abs(hand.landmark(i).y() - hand_history.at(i * 2 + 1));
+                distance += abs((hand.landmark(i).x() - hand_history.at(i * 2)) / hand_history.at(i * 2));
+                distance += abs((hand.landmark(i).y() - hand_history.at(i * 2 + 1)) / hand_history.at(i * 2 + 1));
                 hand_history.at(i * 2) = hand.landmark(i).x();
                 hand_history.at(i * 2 + 1) = hand.landmark(i).y();
             }
             distance /= fps;
-            LOG(INFO) << "DISTANCE: " << distance;
+            // LOG(INFO) << "DISTANCE: " << distance;
 
             std::unique_ptr<double> output_stream_collection = std::make_unique<double>(distance); 
             cc -> Outputs().Tag(DOUBLE).Add(output_stream_collection.release(), cc->InputTimestamp());
