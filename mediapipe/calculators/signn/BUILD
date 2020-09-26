@@ -475,6 +475,7 @@ cc_library(
         "//mediapipe/framework/port:ret_check",
         "//mediapipe/framework:calculator_options_cc_proto",
         ":dynamic_tflite_tensors_to_character_calculator_cc_proto",
+        ":timed_queue",
         "@org_tensorflow//tensorflow/lite:framework",
     ],
     alwayslink = 1,

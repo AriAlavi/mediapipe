@@ -43,9 +43,13 @@ namespace mediapipe{
             auto hand_history = history.get();
             double average_hand_history = 0;
             for(int i = 0; i < hand_history.size(); i++){
-                average_hand_history += hand_history.at(i);
+                if(hand_history.at(i) < 100){ // To prevent inf from being added - I am not sure how inf gets into the systen
+                    average_hand_history += hand_history.at(i);
+                }
+                
             }
             average_hand_history /= hand_history.size();
+            // LOG(INFO) << average_hand_history;
             if(average_hand_history < DYNAMIC_THRESHOLD && extra_dynamic_frames < 0){
                 auto output_data = absl::make_unique<NormalizedLandmarkList>(static_data);
                 cc->Outputs().Tag(Landmarks).Add(output_data.release(), cc->InputTimestamp());
