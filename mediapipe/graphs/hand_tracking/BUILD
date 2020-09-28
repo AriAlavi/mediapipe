@@ -29,17 +29,7 @@ exports_files(glob([
 cc_library(
     name = "signn_calculators",
     deps = [   
-        "//mediapipe/calculators/signn:fps_calculator",
-        "//mediapipe/calculators/signn:string_to_render_data_calculator",
-        "//mediapipe/calculators/signn:double_to_string_calculator",
-        "//mediapipe/calculators/signn:tflite_tensors_to_character_calculator",
-        "//mediapipe/calculators/signn:time_average_calculator",
-        "//mediapipe/calculators/signn:z_score_calculator",
-        "//mediapipe/calculators/signn:landmarks_to_tensor_calculator",
-        "//mediapipe/calculators/signn:point_velocity_calculator",
-        "//mediapipe/calculators/signn:regulation_calculator",
-        "//mediapipe/calculators/signn:landmarkhistory_to_tensor_calculator",
-        "//mediapipe/calculators/signn:dynamic_tflite_tensors_to_character_calculator",
+
     ]
 )
 
@@ -48,7 +38,6 @@ cc_library(
     deps = [
         ":signn_calculators",
         "//mediapipe/calculators/signn:console_logger_calculator",  
-        "//mediapipe/graphs/hand_tracking/subgraphs:signn", 
     ]
 )
 

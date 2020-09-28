@@ -271,9 +271,13 @@ mediapipe_simple_subgraph(
     graph = "signn_static.pbtxt",
     register_as = "SigNNStatic",
     deps = [
+        "//mediapipe/calculators/signn:z_score_calculator",
+        "//mediapipe/calculators/signn:time_average_calculator",
+        "//mediapipe/calculators/signn:landmarks_to_tensor_calculator",
+        "//mediapipe/calculators/tflite:tflite_converter_calculator",
         "//mediapipe/calculators/tflite:tflite_inference_calculator",
         "//mediapipe/calculators/signn:tflite_tensors_to_character_calculator",
-        "//mediapipe/calculators/signn:time_average_calculator"
+        "//mediapipe/calculators/signn:string_to_render_data_calculator",
     ],
 )
 mediapipe_simple_subgraph(
@@ -281,27 +285,13 @@ mediapipe_simple_subgraph(
     graph = "signn_dynamic.pbtxt",
     register_as = "SigNNDynamic",
     deps = [
-        "//mediapipe/calculators/tflite:tflite_inference_calculator",
-        "//mediapipe/calculators/signn:tflite_tensors_to_character_calculator",
-        "//mediapipe/calculators/signn:time_average_calculator",
-        "//mediapipe/calculators/signn:dynamic_tflite_tensors_to_character_calculator",
+        "//mediapipe/calculators/signn:regulation_calculator",
         "//mediapipe/calculators/signn:zscore_per_video_calculator",
-    ],
-)
-
-mediapipe_simple_subgraph(
-    name = "signn",
-    graph = "signn.pbtxt",
-    register_as = "SigNN",
-    deps = [
-        ":signn_static",
-        "//mediapipe/calculators/signn:hand_gate_calculator",
-        "//mediapipe/calculators/signn:double_logger",
-        "//mediapipe/calculators/signn:signn_end_gate_calculator",
-        "//mediapipe/calculators/signn:string_emitter_calculator",
-        "//mediapipe/calculators/signn:fps_gate_calculator",
-        "//mediapipe/calculators/signn:landmark_history_calculator",
-        "//mediapipe/calculators/signn:static_dynamic_gate_calculator",
+        "//mediapipe/calculators/signn:landmarkhistory_to_tensor_calculator",
+        "//mediapipe/calculators/tflite:tflite_converter_calculator",
+        "//mediapipe/calculators/tflite:tflite_inference_calculator",
+        "//mediapipe/calculators/signn:dynamic_tflite_tensors_to_character_calculator",
+        "//mediapipe/calculators/signn:string_to_render_data_calculator",
     ],
 )
 
@@ -313,12 +303,14 @@ mediapipe_simple_subgraph(
         ":signn_static",
         ":signn_dynamic",
         "//mediapipe/calculators/signn:hand_gate_calculator",
-        "//mediapipe/calculators/signn:double_logger",
-        "//mediapipe/calculators/signn:signn_end_gate_calculator",
         "//mediapipe/calculators/signn:string_emitter_calculator",
+        "//mediapipe/calculators/signn:string_to_render_data_calculator",
+        "//mediapipe/calculators/signn:fps_calculator",
         "//mediapipe/calculators/signn:fps_gate_calculator",
         "//mediapipe/calculators/signn:landmark_history_calculator",
+        "//mediapipe/calculators/signn:point_velocity_calculator",
         "//mediapipe/calculators/signn:static_dynamic_gate_calculator",
+        "//mediapipe/calculators/signn:signn_end_gate_calculator",     
     ],
 )
 

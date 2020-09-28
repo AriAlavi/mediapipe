@@ -52,46 +52,46 @@ namespace mediapipe {
   ::mediapipe::Status DynamicTfLiteTensorsToCharacterCalculator::Process(
       CalculatorContext* cc) {
     const auto& input_tensors = cc->Inputs().Tag("TENSORS").Get<std::vector<TfLiteTensor>>();
-    const TfLiteTensor* raw_tensor = &input_tensors[0];
+      const TfLiteTensor* raw_tensor = &input_tensors[0];
 
 
-    const float* raw_floats = raw_tensor->data.f;
-    int num_values = 1;
-    for (int i = 0; i < raw_tensor->dims->size; ++i) {
-      RET_CHECK_GT(raw_tensor->dims->data[i], 0);
-      num_values *= raw_tensor->dims->data[i];
-    }
-    auto output_floats = absl::make_unique<std::vector<float>>(
-        raw_floats, raw_floats + num_values);
-    
-    float highest_confidence = 0;
-    int highest_confidence_index = 0;
-    for(int i = 0; i < output_floats->size(); i++){
-      if(output_floats->at(i) > highest_confidence_index){
-        highest_confidence = output_floats->at(i);
-        highest_confidence_index = i;
+      const float* raw_floats = raw_tensor->data.f;
+      int num_values = 1;
+      for (int i = 0; i < raw_tensor->dims->size; ++i) {
+        RET_CHECK_GT(raw_tensor->dims->data[i], 0);
+        num_values *= raw_tensor->dims->data[i];
       }
-    }
-    probs.at(highest_confidence_index).add(true);
-
-    int most_common_index = 0;
-    int most_common_count = 0;
-    int total_count = 0;
-    for(int i = 0; i < DATA_MAP.size(); i++){
-      int current_size = probs.at(i).get().size();
-      if(current_size > most_common_count){
-        most_common_count = current_size;
-        total_count += current_size;
-        most_common_index = i;
+      auto output_floats = absl::make_unique<std::vector<float>>(
+          raw_floats, raw_floats + num_values);
+      
+      float highest_confidence = 0;
+      int highest_confidence_index = 0;
+      for(int i = 0; i < output_floats->size(); i++){
+        if(output_floats->at(i) > highest_confidence_index){
+          highest_confidence = output_floats->at(i);
+          highest_confidence_index = i;
+        }
       }
-    }
-    float certainty = (float)most_common_count / (float)total_count;
-    std::string signn;
-    if(certainty >= unknown_threshold){
-      signn = DATA_MAP[most_common_index];
-    }else{
-      signn = "Unknown";
-    }
+      probs.at(highest_confidence_index).add(true);
+
+      int most_common_index = 0;
+      int most_common_count = 0;
+      int total_count = 0;
+      for(int i = 0; i < DATA_MAP.size(); i++){
+        int current_size = probs.at(i).get().size();
+        if(current_size > most_common_count){
+          most_common_count = current_size;
+          total_count += current_size;
+          most_common_index = i;
+        }
+      }
+      float certainty = (float)most_common_count / (float)total_count;
+      std::string signn;
+      if(certainty >= unknown_threshold){
+        signn = DATA_MAP[most_common_index];
+      }else{
+        signn = "Unknown";
+      }
 
     LOG(INFO) << DATA_MAP[most_common_index] << ": " << certainty << "% count: " << most_common_count;
 
