@@ -39,6 +39,10 @@ namespace mediapipe{
             auto static_data = cc->Inputs().Tag(Landmarks).Get<NormalizedLandmarkList>();
             auto dynamic_data = cc->Inputs().Tag(LandmarksHistory).Get<std::vector<NormalizedLandmarkList>>();
             double hand_velocity = cc->Inputs().Tag(Double).Get<double>();
+            if(first_ten_frames_static > 0){
+                first_ten_frames_static--;
+                hand_velocity = 0;
+            }
             history.add(hand_velocity);
             auto hand_history = history.get();
             double average_hand_history = 0;
@@ -72,6 +76,7 @@ namespace mediapipe{
         TimedQueue<double> history;
         double extra_dynamic_frames = 0;
         int MAXIMUM_EXTRA_DYNAMIC_FRAMES = 0;
+        int first_ten_frames_static = 10;
         double DYNAMIC_THRESHOLD;
 
     };
