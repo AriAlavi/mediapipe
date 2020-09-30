@@ -1,5 +1,7 @@
 # SigNN
 
+Our app has finally been deployed: https://play.google.com/store/apps/details?id=com.signn.mediapipe.apps.handtrackinggpu
+
 ## Abstract
 
 The goal of SigNN is to develop a software which is capable of real-time translation of American Sign Langauge (ASL) into English text. Due to various contraints, the scope has been limited to completing reliable translation for 24 of the 26 characters of the alphabet. We achieve this objective using Mediapipe: an alpha-stage framework for building multimodal, cross platform, applied ML pipelines. All data used to train our neurall network was self-collected, aggregated, and analyzed through the use of scripts written in Google Colab.
