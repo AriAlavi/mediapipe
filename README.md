@@ -138,7 +138,7 @@ In the end, the lack of hand persistence did not pose a substantial problem due 
 
 **We began our project** by trying to break into the black box that was MediaPipe. While there is some basic documentation, much of what we learned was through experimentation and modification of the source code. After a month, we finally had a good idea of how to modify MediaPipe for our purposes.  
 
-![Diagram of a MediaPipe graph](https://raw.githubusercontent.com/google/MediaPipe/master/MediaPipe/docs/images/mobile/hand_tracking_mobile.png)
+![Diagram of a MediaPipe graph](https://github.com/AriAlavi/SigNN/blob/master/docs/images/mobile/hand_tracking_mobile.png?raw=true)
 
 The diagram above shows the MediaPipe graph for detecting and rendering the position of a hand in a video. MediaPipe works through a system of graphs, subgraphs, calculators, and packets.
 
@@ -184,7 +184,8 @@ We created a series of Google Colab scripts in order to streamline data collecti
 
 - Json formation script ([Openpose](https://colab.research.google.com/drive/1F4Zw9shdp73fVYtX0jMD7idA-TecCpCJ)): This script will download the formed json file for each character (Formed json is the collection of many json files into one json list or object). If the length of the list of the formed json file is equal to the number of raw json files associated with that character, we know that there have been no additional json files added. Otherwise, we will delete the formed_json file (as we cannot discriminately modify the formed json file) and reform it with the data from the raw json folder for that associated character. When all characters are formed, they will combine to create a complete data.json and be uploaded to a unique database that only holds the formed file.
 
-Through the use of these scripts we managed to accumulate about *six thousand* different pictures for sign language characters.
+Through the use of these scripts we managed to accumulate more than *eight thousand* different pictures for sign language characters.
+
 
 ### Algorithmic Approach
 
@@ -205,7 +206,7 @@ Signs such as M and I were mistaken for each other often under the algorithimc a
 
 **Working on the neural network**, we didn't find much success with simply feeding in the data to the network. Our accuracy was hovering in the 60% range. We assumed that the neural network would figure out how to best interpret the data internally, but we soon got the idea of preprocessing the data in some way. The angle and z-score methods we used in the algorithmic approach made their way back. We hoped that both methods would reduce variability between samples (though they were already normalized) but didn't know which would be more effective. We saw a great boost in our accuracy when we used both methods:
 
-- Z-score method: ~85% accuracy
+- Z-score method: ~95% accuracy
 
 - Angle method: ~75% accuracy
 
@@ -217,6 +218,10 @@ Relu(x900) -> Dropout(.15) -> Relu(x400) -> Dropout(.25) -> Tanh(x200) -> Dropou
 
 Note that other than rounding the numbers to be more human friendly, the architecture of this neural network was found to be the most optimal by a computer. Even without human biases, the architecture that was developed has a clear pattern to it. Density decreases throughout the layers while dropout increases.
 
+
+## Our Modifications to MediaPipe
+
+
 ## Key Results and Summary
 
 - Real-time translation of sign language is a computationally difficult task that may not be possible on most consumer-grade hardware. The exception to that is if the software is based on MediaPipe. However, as of time of writing this, MediaPipe has poor documentation and can only track hands (not arms and face).
@@ -227,12 +232,12 @@ Note that other than rounding the numbers to be more human friendly, the archite
 
 - Sign language translation cannot be accurately done in an algorithmic approach as many signs look very similar when it (x, y) coordinate form. It is necessary to use a neural network.
 
-- Coordinate data from pictures is not optimal input to a translation neural network. Accuracy rates increase (60% -> 85% in our case) when each frame has z-scores individually calculated for each set of x and y coordinates.
+- Coordinate data from pictures is not optimal input to a translation neural network. Accuracy rates increase (60% -> 95% in our case) when each frame has z-scores individually calculated for each set of x and y coordinates.
 
-- We were able to complete real-time translation of characters A-Y (excluding J) with 89% accuracy.
+- We were able to complete real-time translation of characters A-Y (excluding J) with 95% accuracy. J, Z with 99% accuracy.
 
 - ASL Characters J and Z along with almost all ASL words are "time-series" signs that will require the use of an LSTM and complex data management infrastructure.
 
 ## Future Work
 
-Future work could include the completion of the alphabet with time-series characters J and Z. In order to do so, we would need to modify our Google Colab scripts to accommodate videos. We would also have to create a MediaPipe calculator to store the last n frames of data. One problem that requires research is finding out how many previous frames the neural network should be fed in order to accurately predict most signs. If J and Z are completed with high accuracy, it would be somewhat trivial to expand the neural network to the most popular sign language words. The biggest bottleneck in that case would be lack of available data on sign language words.
+We hope to see the field of ASL translation grow in the future. From here, multi-hand support should be added to the translation process (which is already supported by MediaPipe). It will be important to tell if a hand is a left hand or a right hand (a feature not supported by MediaPipe as of October 2020). Using MediaPipe's Pose tracking in conjunction with more detailed hand tracking may be the way forward for the complex, multi-hand signs that words achive. Finally, there is phase III which would transform the program from a translator, to an interpreter. 
