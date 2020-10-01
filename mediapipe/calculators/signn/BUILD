@@ -505,3 +505,14 @@ cc_library(
     ],
     alwayslink = 1,
 )
+
+cc_library(
+    name = "left_hand_gate_calculator",
+    srcs = ["left_hand_gate_calculator.cc"],
+    visibility = ["//visibility:public"],
+    deps = [
+        "//mediapipe/framework:calculator_framework",
+        ":timed_queue",
+    ],
+    alwayslink = 1,
+)

@@ -18,8 +18,7 @@ namespace mediapipe {
     float memory_length = 2;
     float last_character_bias = .001;
     int last_character = -1;
-    TimedQueue<bool> J_probs;
-    TimedQueue<bool> Z_probs;
+    TimedQueue<int> last_probs;
   };
 
   REGISTER_CALCULATOR(DynamicTfLiteTensorsToCharacterCalculator);
@@ -38,8 +37,7 @@ namespace mediapipe {
     // last_character_bias = options.memo();
     unknown_threshold = options.unknown_threshold();
     memory_length = options.memory_length();
-    J_probs = TimedQueue<bool>(memory_length);
-    Z_probs = TimedQueue<bool>(memory_length);
+    last_probs = TimedQueue<int>(memory_length);
     return ::mediapipe::OkStatus();
   }
 
@@ -58,34 +56,50 @@ namespace mediapipe {
 
     auto output_floats = absl::make_unique<std::vector<float>>(
         raw_floats, raw_floats + num_values);
-    
-    if(output_floats->at(0) > output_floats->at(1)){
-      J_probs.add(true);
-    }else{
-      Z_probs.add(true);
-    }
 
-    int J_size = J_probs.get().size();
-    int Z_size = Z_probs.get().size();
-    int higher_size = 0;
-    int total_size = J_size + Z_size;
-    std::string signn;
-    if(total_size == 0){
-      total_size == 1;
-    }
-    float confidence = 0;
-    if(J_size > Z_size){
-      signn = "J";
-      higher_size = J_size;
+    std::string signn = "Testing";
+
+    int MINIMUM_SAMPLE_SIZE = 10;
+    float probability = 0;
+    float j_sum = 0;
+    float z_sum = 0;
+
+    if(output_floats->at(0) > output_floats->at(1)){
+      last_probs.add(0);
     }else{
-      signn = "Z";
-      higher_size = Z_size;
+      last_probs.add(1);
     }
-    confidence = (float)higher_size / (float)total_size;
-    if(confidence < unknown_threshold){
+    std::vector<int> last_values = last_probs.get();
+    for(int i = 0; i < last_values.size(); i++){
+      if(last_values.at(0) == 0){
+        j_sum++;
+      }else{
+        z_sum++;
+      }
+    }
+    int sample_size = last_values.size();
+    if(sample_size > MINIMUM_SAMPLE_SIZE){
+      if(j_sum > z_sum){
+        probability = j_sum / sample_size;
+        signn = "J";
+      }else{
+        probability = z_sum / sample_size;
+        signn = "Z";
+      }
+      if(probability < unknown_threshold){
+        signn = "Unknown";
+      }
+    }else{
       signn = "Unknown";
     }
-    LOG(INFO) << signn << ": " << confidence << "%";
+
+
+
+
+    LOG(INFO) << "J: " << j_sum << " Z: " << z_sum << " PROB: " << probability << "% SIZE:" << sample_size; 
+
+      
+
 
     std::unique_ptr<std::string> output_stream_collection = std::make_unique<std::string>(signn); 
     cc -> Outputs().Tag(STRING).Add(output_stream_collection.release(), cc->InputTimestamp());

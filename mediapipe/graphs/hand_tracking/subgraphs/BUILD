@@ -310,7 +310,8 @@ mediapipe_simple_subgraph(
         "//mediapipe/calculators/signn:landmark_history_calculator",
         "//mediapipe/calculators/signn:point_velocity_calculator",
         "//mediapipe/calculators/signn:static_dynamic_gate_calculator",
-        "//mediapipe/calculators/signn:signn_end_gate_calculator",     
+        "//mediapipe/calculators/signn:signn_end_gate_calculator",    
+        "//mediapipe/calculators/signn:left_hand_gate_calculator", 
     ],
 )
 

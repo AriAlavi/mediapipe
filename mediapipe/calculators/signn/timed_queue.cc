@@ -42,6 +42,7 @@ double TimedQueue<T>::delta_t(clock_t start, clock_t end){
 }
 
 template class TimedQueue<bool>;
+template class TimedQueue<int>;
 template class TimedQueue<double>;
 template class TimedQueue<float>;
 template class TimedQueue<mediapipe::NormalizedLandmarkList>;

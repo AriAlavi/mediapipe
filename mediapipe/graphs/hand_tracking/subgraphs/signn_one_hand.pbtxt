@@ -3,9 +3,35 @@ type: "SigNNOneHand"
 input_stream: "LANDMARKS:landmarks"
 output_stream: "RENDER_DATA:output"
 
+
+node {
+  calculator: "LeftHandGateCalculator"
+  input_stream: "LANDMARKS:landmarks"
+  output_stream: "LANDMARKS:warning_gated"
+  output_stream: "SIGNAL:warning_message"
+}
+
+node {
+    calculator: "StringEmitterCalculator"
+    input_stream: "SIGNAL:warning_message"
+    output_stream: "STRING:warning_text"
+    node_options: {
+      [type.googleapis.com/mediapipe.StringEmitterCalculatorOptions] {
+        given_string: "Use Left hand"
+      }
+    }
+}
+
+node {
+  calculator: "StringToRenderDataCalculator"
+  input_stream: "STRING:warning_text"
+  output_stream: "RENDER_DATA:warning_render"
+}
+
+
 node {
   calculator: "OneHandGateCalculator"
-  input_stream: "LANDMARKS:landmarks"
+  input_stream: "LANDMARKS:warning_gated"
   output_stream: "LANDMARKS:hand_gated"
   output_stream: "SIGNAL:no_hands"
     node_options: {
@@ -124,6 +150,7 @@ node {
   input_stream: "dynamic_render"
   input_stream: "invalid_fps_render"
   input_stream: "invalid_hands_render"
+  input_stream: "warning_render"
   output_stream: "RENDER_DATA:output"
   input_stream_handler {
     input_stream_handler: 'ImmediateInputStreamHandler'
