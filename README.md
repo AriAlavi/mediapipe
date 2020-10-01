@@ -218,8 +218,101 @@ Relu(x900) -> Dropout(.15) -> Relu(x400) -> Dropout(.25) -> Tanh(x200) -> Dropou
 
 Note that other than rounding the numbers to be more human friendly, the architecture of this neural network was found to be the most optimal by a computer. Even without human biases, the architecture that was developed has a clear pattern to it. Density decreases throughout the layers while dropout increases.
 
+## J and Z - What it took to make dynamic characters "work"
+
+Static characters are an easy start, but it's the dynamic characters which make up most of ASL's vocabulary. When it came to adding the two dynamic signs, we had a series of problems we ran into.
+
+- How long does a sign take? Is there deviation?
+- How to deal with FPS variance?
+- What instructions to give to data collectors?
+- When to use Dynamic neural network and when to use Static?
+
+### How long does a sign take?
+
+We found that a sign takes about 1 second, with a large deviation. Unfortuantely, by the time we found out that fact, we had already collected a significant dataset with 3 second data, which may have caused the problems we can into.
+
+### How to deal with FPS Variance?
+
+As far as we know, LSTMs require a static number of inputs. Let's say our LSTM accepts the last 60 frames. If the FPS of the device is 10, the LSTM will process the last 6 seconds of video data - while if the FPS were 30, the LSTM would process the last 2 seconds of video data. It's straightforward to control the last (x) seconds of frames, but it's less so to control the number of frames in the last (x) seconds. At first, we thought about making an LSTM
+for many different FPS and feed the data into the closest one depending on the current FPS. Luckily, we thought of another solution. We created an algorithim called "Video Regulation" which takes in a list of coordinates collected at any FPS and approxmiates an output a list of coordinates at our target FPS (20). [You can read more about our regulation script from its developer: Kenny Yip.](https://medium.com/@kyip_7564/a-process-to-standardize-video-fps-for-machine-learning-93a936abdbc)
+
+
+### What instructions to give data collectors?
+
+We decided to keep it simple and leave it to the data collectors' interpretation. Therefore, we'd have a more diverse dataset. Although, we have come to somewhat regret this decision. Almost all videos started out "clean" and ended with the end of the sign. Therefore, the LSTM was not trained to ignore junk data which would be present at the start and end of the sign. We also did not ask for a "none category" of random movements. It would have discouraged high probabilities for J/Z given to random hand movements.
+
+### When to use Dynamic neural network and when to use Static?
+
+Now that we had two neural networks (for static and dynamic signs), we had to decide which result to trust and when. At first, we thought that we could feed data into the LSTM first, and if it wasn't too sure about a sign, then it fell to the static neural network to guess the character. However, the LSTM was always sure about what sign it was looking at, even if it clearly wasn't a J/Z so that approach could not be pursued. We decided then that a velocity based system would work well. After about a week of use, we also found this system to have drawbacks. When the hand was close to the camera, velocity was always high. When the hand was further away, it was hard to get SigNN to detect any velocity. Finally, we decided to use a percent change in position system. A percent change in position would scale equally as well with hand movements near and far from the camera. We found this system to be very accurate at detecting when a hand motion is using movement versus movement from just switching between static signs. However, there is the issue that if an experienced signer jumps between characters too fast, that the LSTM would kick in, thinking J/Z was being attempted. The solution to this could be a modified version of our old "LSTM first" system. If the LSTM is triggered and probability of any sign is low, the task of predicting gets handed to the static neural network, even if percent change in position is high. However, that would require a more accurate LSTM.
+
+### What is wrong with our LSTM?
+
+With all the video data we collected, about *800* 3 second long videos, we ended up at a theoretical accuracy of 99.5%. Yet, in practice the accuracy turned out to be no better than a coin flip. Even worse, the neural network was *very sure* that the random data it was seeing was a J or Z, often switching between J and Z from one second to another. One system in place to mitigate this is our LSTM analysis system. Rather than directly trusting the LSTM, we feed it into a data structure that has the last (x) seconds of result history. If J was predicted more in the last (x) seconds, then we display J, otherwise Z. There is also an uncertainity threshold baked into the LSTM analysis system. With the new system in place, we had better accuracy than a coin flip, but nowhere near the 99.5% accuray we should have. In the end, we belive that the lower accuracy in practice is the result of training data which does not map well to the real data which is fed in. While the training data was clean - there is no clean transition in reality. I belive if we had data of many various lengths, rather than 3 seconds long, we could have had a much more accurate LSTM in practice.   
+
 
 ## Our Modifications to MediaPipe
+
+### Overview
+
+![MediaPipe overview](https://github.com/AriAlavi/SigNN/blob/master/docs/images/signn/signn_integration.png?raw=true)
+
+
+Here we can see a small modification to the “hand_tracking_desktop.pbtxt” file found in “/mediapipe/graphs/hand_tracking”. We have the SigNNOneHand subgraph which takes in LANDMARKS and outputs RENDER_DATA. Landmarks are sourced from the HandLandmark subgraph and are a normalized list of 21 (x, y, z) coordinates which represent 21 points on a hand. 
+
+### SigNNOneHand Subgraph
+
+
+
+![SigNN overview](https://github.com/AriAlavi/SigNN/blob/master/docs/images/signn/signn.png?raw=true)
+
+This is the SigNNOneHand subgraph, which was a single box in the first picture. We can still see the same LANDMARKS input and RENDER_DATA output, but now we can see all the steps that go between the two.
+
+The first step is the OneHandGate. If too many recent frames did not have a detected hand, it will output SIGNAL, otherwise, it will pass on the LANDMARKS to FPSOneHand and FPSGate. SIGNAL goes into StringToRenderData where it will output “Display 1 hand” to the screen.
+
+What ties the SigNNOneHand subgraph together is the SigNNEndGate calculator. Unlike all other calculators used in SigNN, this calculator has an “ImmediateInputStreamHandler”. Therefore, it will execute when a single input is fulfilled rather than waiting for all inputs. Notice that every gate calculator in the SigNNOneHand subgraph either points at another calculator or has a signal outputting to SigNNEndGate. If a gate outputs a Signal, it will not continue to pass data to the graphs down the line. This is effectively an “if else” command block in graph format, which allows calculators to not be run if they don’t need to be.
+
+FPSGate will display “FPS too low” if the recent average FPS is below 3. At below 3 fps we can no longer accurately interpret which ASL character the user is displaying as motion is required to predict J and Z. Fortunately, the app often runs at much higher FPS values.
+
+Next we find PointVelocityOneHand and LandmarkHistory. PointVelocityOneHand will find the percent change in position of each hand coordinate from frame to frame. It also requires a DOUBLE from the FPSGate, which is the fps. This is required because the formula for velocity is ((new position) - (old position)) / (time_passed). Time passed can be found given the FPS. Velocity is required to know if the sign the user is displaying is a static or dynamic one. Letters [A-Y, excluding J] are static signs - the hand stays still. Letters [J, Z] are dynamic signs - the hand moves to sign them. We will get to the LandmarkHistory calculator later.
+
+Given that there are static and dynamic signs, it is up to the StaticDynamicGate to either push forward the LANDMARK_HISTORY signal (activating the Dynamic neural network) or to push forward the LANDMARKS signal (activating the Static neural network). StaticDynamicGate only takes into consideration the average change in velocity over the last (x) seconds and if the last (y) frames were pushed towards LANDMARK_HISTORY. If the hand’s average movement falls below the dynamic threshold but there is sufficient history of movement, it will continue to push forward the Dynamic neural network so that the [J, Z] result does not disappear the second the user’s hand stops moving.
+
+The LandmarkHistory calculator keeps the last (x) seconds of data in memory. Since the dynamic neural network makes use of an LSTM, we must feed it the history of movement every time we would like to get a prediction output. 
+
+### SigNNDynamic Subgraph - LSTM Sign Language Interpreter
+
+![LSTM overview](https://github.com/AriAlavi/SigNN/blob/master/docs/images/signn/signn_dynamic.png?raw=true)
+
+This is what the inside of the SigNNDynamic subgraph looks like. First, the data is regulated to a certain number of frames. Since we know that the data is from the last (x) seconds, and we have the last (y) number of frames through LANDMARKS_HISTORY, we can modify the data to be (z) FPS through our regulation algorithm. The FPS must be static because our LSTM was trained on 20FPS data. 
+
+After being regulated, the data runs through the z-score calculator. It finds the mean and standard deviation of the x and y coordinates over the entire LANDMARK_HISTORY and changes them to z_scores accordingly. The z coordinate was forgotten when the LANDMARK_HISTORY was recorded because we found that it significantly lowered our accuracy.
+
+The LandMarkHistoryToTensor, TfLiteConverter, and TfLiteInference calculators are required to run our LSTM.
+
+DynamicTfLiteTensorsToCharacter has the difficult job of interpreting the LSTM’s data. If we simply output what the LSTM believed was the correct answer in the moment, it would constantly flip flop between J and Z. Therefore, the job of this calculator is to keep in memory how many times the LSTM predicted J and Z within the past (x) seconds. If either character passes a threshold of being predicted (y)% of the last (z) frames, it is outputted. If no character passes the threshold, “Unknown” is outputted.  
+
+### SigNNStatic Subgraph - Fully Connected Neural Network Sign Language Interpreter
+
+![Static overview](https://github.com/AriAlavi/SigNN/blob/master/docs/images/signn/signn_static.png?raw=true)
+
+This is the SigNNStatic subgraph. It is very similar to the SigNNDynamic subgraph, with a few key changes. Firstly, it does the Zscore of the hand rather than of a hand history, so it must use a different calculator. It also makes use of a TimeAverage calculator, where the last (x) seconds of hands are averaged rather than feeding raw data. This helps to overcome glitches that can happen with Mediapipe’s hand tracking neural network under adverse conditions. 
+
+The TfLiteTensorsToCharacter calculator has a similar job to its dynamic counterpart, but a much simpler one. It will receive the prediction of the fully connected neural network that we trained on [A-Y, minus J] and add a last character bias of (x)% to it. Simply, if on the last frame it predicted the letter B, it will give the neural network a (x)% nudge towards B for this frame as well. This prevents constant flip-flopping between signs which may look similar. If the neural network is not at least (y)% confident about any character being the correct sign (including taking the bias into account), it will output “Unknown”. 
+
+This concludes the look into the SigNNOneHand subgraph, which is displayed again below for review.
+
+### Rendering the neural network’s output
+
+![Renderer overview](https://github.com/AriAlavi/SigNN/blob/master/docs/images/signn/signn_render.png?raw=true)
+
+
+This is the SigNNStatic subgraph. It is very similar to the SigNNDynamic subgraph, with a few key changes. Firstly, it does the Zscore of the hand rather than of a hand history, so it must use a different calculator. It also makes use of a TimeAverage calculator, where the last (x) seconds of hands are averaged rather than feeding raw data. This helps to overcome glitches that can happen with Mediapipe’s hand tracking neural network under adverse conditions. 
+
+The TfLiteTensorsToCharacter calculator has a similar job to its dynamic counterpart, but a much simpler one. It will receive the prediction of the fully connected neural network that we trained on [A-Y, minus J] and add a last character bias of (x)% to it. Simply, if on the last frame it predicted the letter B, it will give the neural network a (x)% nudge towards B for this frame as well. This prevents constant flip-flopping between signs which may look similar. If the neural network is not at least (y)% confident about any character being the correct sign (including taking the bias into account), it will output “Unknown”. 
+
+This concludes the look into the SigNNOneHand subgraph, which is displayed again below for review.
+
+
 
 
 ## Key Results and Summary
