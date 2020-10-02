@@ -1,6 +1,6 @@
 # SigNN - Real-time ASL Alphabet Translator
 
-![C translated by App](https://raw.githubusercontent.com/AriAlavi/SigNN/master/docs/images/signn/c.webp = 250x)
+![C translated by App](https://raw.githubusercontent.com/AriAlavi/SigNN/master/docs/images/signn/c.webp =250x)
 
 
 SigNN is the first app which can translate ASL (American Sign Language) in real-time. [It is free and available for download on the Play Store](https://play.google.com/store/apps/details?id=com.signn.MediaPipe.apps.handtrackinggpu). Most of our raw data is also [publically available on Kaggle](https://www.kaggle.com/signnteam/asl-sign-language-pictures-minus-j-z).
