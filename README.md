@@ -328,7 +328,7 @@ This concludes the look into the SigNNOneHand subgraph, which is displayed again
 
 - Sign language translation cannot be accurately done in an algorithmic approach as many signs look very similar when it (x, y) coordinate form. It is necessary to use a neural network.
 
-- Coordinate data from pictures is not optimal input to a translation neural network. Accuracy rates increase (60% -> 95% in our case) when each frame has z-scores individually calculated for each set of x and y coordinates.
+- Coordinate data from pictures is not optimal input to a translation neural network. Accuracy rates increase (81% -> 95% in our case) when each frame has z-scores individually calculated for each set of x and y coordinates.
 
 - We were able to complete real-time translation of characters A-Y (excluding J) with 95% accuracy. J, Z with 99% accuracy.
 
