@@ -320,7 +320,7 @@ This concludes the look into the SigNNOneHand subgraph, which is displayed again
 
 ## Key Results and Summary
 
-- Real-time translation of sign language is a computationally difficult task that may not be possible on most consumer-grade hardware. The exception to that is if the software is based on MediaPipe. However, as of time of writing this, MediaPipe has poor documentation and can only track hands (not arms and face).
+- Real-time translation of sign language is a computationally difficult task that may not be possible on most consumer-grade hardware. However, new libraries such as MediaPipe are starting to make mobile real-time sign language translation possible.
 
 - One of the largest obstacles to the creating of a neural network for the translation of sign language is the lack of publicly available sign language data. Possible solution could be to crowdsource data collection.
 
