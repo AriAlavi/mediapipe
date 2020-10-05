@@ -313,8 +313,7 @@ This is the SigNNStatic subgraph. It is very similar to the SigNNDynamic subgrap
 
 The TfLiteTensorsToCharacter calculator has a similar job to its dynamic counterpart, but a much simpler one. It will receive the prediction of the fully connected neural network that we trained on [A-Y, minus J] and add a last character bias of (x)% to it. Simply, if on the last frame it predicted the letter B, it will give the neural network a (x)% nudge towards B for this frame as well. This prevents constant flip-flopping between signs which may look similar. If the neural network is not at least (y)% confident about any character being the correct sign (including taking the bias into account), it will output “Unknown”. 
 
-This concludes the look into the SigNNOneHand subgraph, which is displayed again below for review.
-
+This concludes the look into the SigNNOneHand subgraph.
 
 
 
