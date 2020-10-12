@@ -38,21 +38,21 @@ In order to compile, first [download the pre-requisites for MediaPipe](https://g
 
 To compile our project, run:
 
-```bazel build -c opt --copt -DMESA_EGL_NO_X11_HEADERS --copt -DEGL_NO_X11 MediaPipe/examples/desktop/hand_tracking:hand_tracking_gpu```
+```bazel build -c opt --copt -DMESA_EGL_NO_X11_HEADERS --copt -DEGL_NO_X11 mediapipe/examples/desktop/hand_tracking:hand_tracking_gpu```
 
 If you own a webcam, run: 
 
-```sudo GLOG_logtostderr=1 bazel-bin/MediaPipe/examples/desktop/hand_tracking/hand_tracking_gpu --calculator_graph_config_file=MediaPipe/graphs/hand_tracking/hand_tracking_desktop_signn.pbtxt```
+```sudo GLOG_logtostderr=1 bazel-bin/mediapipe/examples/desktop/hand_tracking/hand_tracking_gpu --calculator_graph_config_file=mediapipe/graphs/hand_tracking/hand_tracking_desktop_signn.pbtxt```
 
 ### Ubuntu (Without GPU, VM Supported) 
 
 To compile our project, run:
 
-```bazel build -c opt --define MediaPipe_DISABLE_GPU=1 MediaPipe/examples/desktop/multi_hand_tracking:multi_hand_tracking_cpu```
+```bazel build -c opt --define mediapipe_DISABLE_GPU=1 mediapipe/examples/desktop/multi_hand_tracking:multi_hand_tracking_cpu```
 
 If you own a webcam, run:
 
-```sudo GLOG_logtostderr=1 bazel-bin/MediaPipe/examples/desktop/hand_tracking/hand_tracking_cpu --calculator_graph_config_file=MediaPipe/graphs/hand_tracking/hand_tracking_desktop_signn.pbtxt```
+```sudo GLOG_logtostderr=1 bazel-bin/mediapipe/examples/desktop/hand_tracking/hand_tracking_cpu --calculator_graph_config_file=mediapipe/graphs/hand_tracking/hand_tracking_desktop_signn.pbtxt```
 
 ### Ubuntu without Webcam (using Droidcam)
 
@@ -62,17 +62,17 @@ Prefix your run command with ```sudo LD_PRELOAD=/usr/lib/x86_64-linux-gnu/libv4l
 
 Example for GPU:
 
- ```sudo LD_PRELOAD=/usr/lib/x86_64-linux-gnu/libv4l/v4l2convert.so GLOG_logtostderr=1 bazel-bin/MediaPipe/examples/desktop/hand_tracking/hand_tracking_gpu --calculator_graph_config_file=MediaPipe/graphs/hand_tracking/hand_tracking_desktop_signn.pbtxt``` 
+ ```sudo LD_PRELOAD=/usr/lib/x86_64-linux-gnu/libv4l/v4l2convert.so GLOG_logtostderr=1 bazel-bin/mediapipe/examples/desktop/hand_tracking/hand_tracking_gpu --calculator_graph_config_file=mediapipe/graphs/hand_tracking/hand_tracking_desktop_signn.pbtxt``` 
 
 ### Android
 
 It is recomended to use NDK Version 21. To compile our project, run:
 
-```bazel build -c opt --config=android_arm64 MediaPipe/examples/android/src/java/com/google/MediaPipe/apps/signnonehand:signnonehand```
+```bazel build -c opt --config=android_arm64 mediapipe/examples/android/src/java/com/google/mediapipe/apps/signnonehand:signnonehand```
 
 Transfer to Android phone through ADB by running:
 
-```adb install bazel-bin/MediaPipe/examples/android/src/java/com/google/MediaPipe/apps/signnonehand/signnonehand.apk```
+```adb install bazel-bin/mediapipe/examples/android/src/java/com/google/mediapipe/apps/signnonehand/signnonehand.apk```
 
 
 
