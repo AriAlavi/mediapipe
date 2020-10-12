@@ -48,7 +48,7 @@ If you own a webcam, run:
 
 To compile our project, run:
 
-```bazel build -c opt --define mediapipe_DISABLE_GPU=1 mediapipe/examples/desktop/multi_hand_tracking:multi_hand_tracking_cpu```
+```bazel build -c opt --define mediapipe_DISABLE_GPU=1 mediapipe/examples/desktop/hand_tracking:hand_tracking_cpu```
 
 If you own a webcam, run:
 
