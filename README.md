@@ -74,10 +74,9 @@ Transfer to Android phone through ADB by running:
 
 ```adb install bazel-bin/mediapipe/examples/android/src/java/com/google/mediapipe/apps/signnonehand/signnonehand.apk```
 
+The following is our research paper in markdown format. It can also be accessed by PDF here: https://github.com/AriAlavi/SigNN/blob/master/One-Handed%20American%20Sign%20Language%20Translation%2C%20With%20Consideration%20For%20Movement%20Over%20Time%20-%20Our%20Process%2C%20Successes%2C%20and%20Pitfalls%20(2020).pdf
 
-
-
-# A Deep Look Into SigNN and our Process
+# One-Handed American Sign Language Translation, With Consideration For Movement Over Time - Our Process, Successes, and Pitfalls (2020)
 
 ## Abstract
 
