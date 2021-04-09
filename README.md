@@ -231,7 +231,7 @@ Static characters are an easy start, but it's the dynamic characters which make 
 
 ### How long does a sign take?
 
-We found that a sign takes about 1 second, with a large deviation. Unfortuantely, by the time we found out that fact, we had already collected a significant dataset with 3 second data, which may have caused the problems we can into.
+We found that a sign takes about 1 second, with a large deviation. Unfortuantely, by the time we found out that fact, we had already collected a significant dataset with 3 second data, which may have caused the problems we later ran into.
 
 ### How to deal with FPS Variance?
 
